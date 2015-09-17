@@ -20,9 +20,19 @@ namespace FAJournalAlerts
 
             Console.WriteLine("Please enter the username to watch for: ");
             artist.username = Console.ReadLine();
-            Console.WriteLine("Enter update frequency (in minutes): ");
-            minuteDelay = Int32.Parse(Console.ReadLine());
-
+            Console.WriteLine("Enter update frequency (in minutes, divisible by 5): ");
+            try 
+            {
+                minuteDelay = Int32.Parse(Console.ReadLine());
+                if (minuteDelay % 5 != 0 || minuteDelay < 1)
+                    throw new System.Exception("Invalid number of minutes exception. Exiting program.");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                Console.ReadLine();
+                Environment.Exit(1);
+            }
             uriSuffix += artist.username;
             uriSuffix += "/journals.json";
 

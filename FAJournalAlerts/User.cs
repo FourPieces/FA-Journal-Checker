@@ -27,6 +27,7 @@ namespace FAJournalAlerts
                 latestJournal = Int32.Parse(download);
                 Console.WriteLine("Initialized with latest journal.");
             }
+
             //If the last latest journal has a smaller ID than the current latest journal, that means that the current journal is more recent than the last check
             //Alert the user if so
             else if (latestJournal < Int32.Parse(download))
@@ -52,6 +53,7 @@ namespace FAJournalAlerts
             int start, end;
             string strStart = "<item>\n  <title>";
             string strEnd = "</title>";
+
             //make a substring between <item>\n  <title> and </title>
             if (rssFile.Contains(strStart) && rssFile.Contains(strEnd))
             {
