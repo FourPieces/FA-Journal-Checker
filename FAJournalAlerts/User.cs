@@ -16,16 +16,35 @@ namespace FAJournalAlerts
         //Parses the ID of the latest journal and compares it to the last ID parsed, alerting the user if the new ID is larger
         public void setLatestJournal(WebClient w, string suffix)
         {
-            byte[] myDataBuffer = w.DownloadData(suffix); //reads the .json file specified by the suffix
+            Byte[] myDataBuffer = null;
+            try
+            {
+                myDataBuffer = w.DownloadData(suffix); //reads the .json file specified by the suffix
+            }
+            catch (System.Net.WebException)
+            {
+                Console.WriteLine("Invalid username. Exiting.");
+                Console.ReadLine();
+                Environment.Exit(2);
+            }
+
             string download = Encoding.ASCII.GetString(myDataBuffer); //encode it as ASCII in a string file
-            download = download.Remove(14);
-            download = download.Trim(new Char[] { ' ', '\n', '[', '\"', ',', ']', '\n' }); //trims the .json file to only include the most recent journal ID
+            if (download.Length < 7) //IDs are 7 characters long. If the download is less than that, there are no journals to compare against.
+            {
+                download = "0";
+                Console.WriteLine("User currently has no journals.");
+            }
+            else
+            {
+                download = download.Remove(14);
+                download = download.Trim(new Char[] { ' ', '\n', '[', '\"', ',', ']', '\n' }); //trims the .json file to only include the most recent journal ID
+            }
 
             //If the program hasn't been run before, initialize the journal as the latest journal
             if (latestJournal == -42)
             {
                 latestJournal = Int32.Parse(download);
-                Console.WriteLine("Initialized with latest journal.");
+                Console.WriteLine("Initialized with latest journal (or 0 if no journals exist).");
             }
 
             //If the last latest journal has a smaller ID than the current latest journal, that means that the current journal is more recent than the last check
