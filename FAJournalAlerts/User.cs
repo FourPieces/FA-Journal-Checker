@@ -61,7 +61,7 @@ namespace FAJournalAlerts
         }
 
         //Takes the .rss file of the journal and parses out the latest name
-        public string getJournalName(WebClient w)
+        private string getJournalName(WebClient w)
         {
             //takes the .rss file of all the journals and sets it as a string
             string suffix = "/user/" + username + "/journals.rss";
