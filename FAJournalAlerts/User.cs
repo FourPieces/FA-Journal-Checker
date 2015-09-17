@@ -23,9 +23,9 @@ namespace FAJournalAlerts
             }
             catch (System.Net.WebException)
             {
-                Console.WriteLine("Invalid username. Exiting.");
+                Console.WriteLine("404 error: Could not access webpage. Exiting.");
                 Console.ReadLine();
-                Environment.Exit(2);
+                Environment.Exit(-1);
             }
 
             string download = Encoding.ASCII.GetString(myDataBuffer); //encode it as ASCII in a string file

@@ -13,21 +13,27 @@ namespace FAJournalAlerts
         {
             WebClient myWebClient = new WebClient();
             User artist = new User();
-            int minuteDelay = 5; //default checks every 5 mins
+            int minuteDelay = 1; //default checks every 1 mins
 
             string hostUri = "http://faexport.boothale.net";
             string uriSuffix = "/user/";
 
             Console.WriteLine("Please enter the username to watch for: ");
             artist.username = Console.ReadLine();
-            Console.WriteLine("Enter update frequency (in minutes, increments of 5): ");
 
-            minuteDelay = Int32.Parse(Console.ReadLine());
-            if (minuteDelay % 5 != 0 || minuteDelay < 1)
+            Console.WriteLine("Enter update frequency (in minutes, 3 or greater): ");
+            while (minuteDelay < 3)
             {
-                Console.WriteLine("Invalid number of minutes. Exiting.");
-                Console.ReadLine();
-                Environment.Exit(1);
+                try
+                {
+                    minuteDelay = Int32.Parse(Console.ReadLine());
+                    if (minuteDelay < 3)
+                        Console.WriteLine("Enter an update frequency of 3 or more mins.");
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Error: must enter a number.");
+                }
             }
     
             uriSuffix += artist.username;
