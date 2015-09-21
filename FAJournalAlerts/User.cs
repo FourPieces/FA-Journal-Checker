@@ -32,7 +32,7 @@ namespace FAJournalAlerts
             if (download.Length < 7) //IDs are 7 characters long. If the download is less than that, there are no journals to compare against.
             {
                 download = "0";
-                Console.WriteLine("User currently has no journals.\n");
+                Console.WriteLine("User currently has no journals.");
             }
             else
             {
