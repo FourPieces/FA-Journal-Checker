@@ -32,7 +32,7 @@ namespace FAJournalAlerts
             if (download.Length < 7) //IDs are 7 characters long. If the download is less than that, there are no journals to compare against.
             {
                 download = "0";
-                Console.WriteLine("User currently has no journals.");
+                Console.WriteLine("User currently has no journals.\n");
             }
             else
             {
@@ -44,7 +44,7 @@ namespace FAJournalAlerts
             if (latestJournal == -42)
             {
                 latestJournal = Int32.Parse(download);
-                Console.WriteLine("Initialized with latest journal (or 0 if no journals exist).");
+                Console.WriteLine("Initialized with latest journal (or 0 if no journals exist).\n");
             }
 
             //If the last latest journal has a smaller ID than the current latest journal, that means that the current journal is more recent than the last check
