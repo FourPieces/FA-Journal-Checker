@@ -16,7 +16,8 @@ namespace FAJournalAlerts
             int minuteDelay = 1; //default checks every 1 mins
 
             string hostUri = "http://faexport.boothale.net";
-            string[] uriSuffix = {"/user/", "/user/", "/user/", "/user/", "/user/"};
+
+            myWebClient.BaseAddress = hostUri;
 
             Console.WriteLine("Please enter up to 5 usernames to watch for, one line at a time. Type !stop to stop entering names: ");
             int numArtists = 0;
@@ -26,7 +27,7 @@ namespace FAJournalAlerts
                 answer = Console.ReadLine();
                 if (answer != "!stop")
                 {
-                    artists[numArtists] = new User(answer);
+                    artists[numArtists] = new User(answer, myWebClient);
                     numArtists++;
                 }
             }
@@ -46,19 +47,12 @@ namespace FAJournalAlerts
                 }
             }
 
-            for (int i = 0; i < numArtists; i++)
-            {
-                uriSuffix[i] += artists[i].username;
-                uriSuffix[i] += "/journals.json";
-            }
-            myWebClient.BaseAddress = hostUri;
-
             while (true)
             {
                 for (int i = 0; i < numArtists; i++)
                 {
-                    Console.WriteLine("Checking latest journal for " + artists[i].username);
-                    artists[i].setLatestJournal(myWebClient, uriSuffix[i]);
+                    Console.WriteLine("Checking latest journal for " + artists[i].getUsername());
+                    artists[i].setLatestJournal();
                 }
                 System.Threading.Thread.Sleep(minuteDelay * 60 * 1000); // (desired minutes * 60 * 1000)
             }

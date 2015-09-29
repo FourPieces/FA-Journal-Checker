@@ -10,21 +10,26 @@ namespace FAJournalAlerts
 {
     class User
     {
-        public string username = "";
-        public int latestJournal = -42;
+        private string username = "";
+        private string journalSuffix = "/user/";
+        private int latestJournal = -42;
+        private WebClient individualWebClient = new WebClient();
 
-        public User(string u)
+        public User(string u, WebClient w)
         {
             username = u;
+            individualWebClient = w; //copies over the webclient to be used with this user
+            appendSuffix(); //sets the suffix for that user's username
+            initializeLatestJournal(); //initializes the latest journal to the current journal ID or 0 if no journals exist
         }
 
-        //Parses the ID of the latest journal and compares it to the last ID parsed, alerting the user if the new ID is larger
-        public void setLatestJournal(WebClient w, string suffix)
+        //Downloads the journal ID for the user and returns it as an int
+        private int downloadJournalID()
         {
             Byte[] myDataBuffer = null;
             try
             {
-                myDataBuffer = w.DownloadData(suffix); //reads the .json file specified by the suffix
+                myDataBuffer = individualWebClient.DownloadData(journalSuffix); //reads the .json file specified by the suffix
             }
             catch (System.Net.WebException)
             {
@@ -33,31 +38,40 @@ namespace FAJournalAlerts
                 Environment.Exit(-1);
             }
 
-            string download = Encoding.ASCII.GetString(myDataBuffer); //encode it as ASCII in a string file
-            if (download.Length < 7) //IDs are 7 characters long. If the download is less than that, there are no journals to compare against.
-            {
-                download = "0";
-                Console.WriteLine("User currently has no journals.");
-            }
+            return trimJournals(Encoding.ASCII.GetString(myDataBuffer)); //encode it as ASCII in a string file
+        }
+        
+        //trims formatting from .json file to get only the most recent journal
+        //If Length is too small, there is no journal, so return 0 as the ID
+        private int trimJournals(string s)
+        {
+            if (s.Length < 7)
+                return 0;
+            s = s.Remove(14);
+            s = s.Trim(new Char[] { ' ', '\n', '[', '\"', ',', ']', '\n' });
+            return Int32.Parse(s);
+        }
+
+        //sets lastestJournal for the user to the most recent journal ID
+        private void initializeLatestJournal()
+        {
+            latestJournal = downloadJournalID();
+            if (latestJournal > 0)
+                Console.WriteLine("Initialized with latest journal for " + username + ". ID: " + latestJournal + " Title: " + getJournalName());
             else
-            {
-                download = download.Remove(14);
-                download = download.Trim(new Char[] { ' ', '\n', '[', '\"', ',', ']', '\n' }); //trims the .json file to only include the most recent journal ID
-            }
+                Console.WriteLine(username + " currently has no journals. Initialized with ID 0.");
+        }
 
-            //If the program hasn't been run before, initialize the journal as the latest journal
-            if (latestJournal == -42)
-            {
-                latestJournal = Int32.Parse(download);
-                Console.WriteLine("Initialized with latest journal (or 0 if no journals exist).\n");
-            }
-
+        //Takes the ID of the latest journal and compares it to the last ID stored, alerting the user if the new ID is larger
+        public void setLatestJournal()
+        {
             //If the last latest journal has a smaller ID than the current latest journal, that means that the current journal is more recent than the last check
             //Alert the user if so
-            else if (latestJournal < Int32.Parse(download))
+            int currentJournalID = downloadJournalID();
+            if (latestJournal < currentJournalID)
             {
-                latestJournal = Int32.Parse(download);
-                MessageBox.Show(username + " posted a new journal!\n" + getJournalName(w), "New Journal!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                latestJournal = currentJournalID;
+                MessageBox.Show(username + " posted a new journal!\n" + getJournalName(), "New Journal!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -66,11 +80,11 @@ namespace FAJournalAlerts
         }
 
         //Takes the .rss file of the journal and parses out the latest name
-        private string getJournalName(WebClient w)
+        private string getJournalName()
         {
             //takes the .rss file of all the journals and sets it as a string
-            string suffix = "/user/" + username + "/journals.rss";
-            byte[] myDataBuffer = w.DownloadData(suffix);
+            string rssSuffix = "/user/" + username + "/journals.rss";
+            byte[] myDataBuffer = individualWebClient.DownloadData(rssSuffix);
             string rssFile = Encoding.ASCII.GetString(myDataBuffer);
 
             //looks for the first instance of <item> <title> </title>, which is where the title of the most recent journal is
@@ -89,6 +103,17 @@ namespace FAJournalAlerts
             {
                 return "";
             }
+        }
+
+        private void appendSuffix()
+        {
+            journalSuffix += username;
+            journalSuffix += "/journals.json";
+        }
+
+        public string getUsername()
+        {
+            return username;
         }
     }
 }
