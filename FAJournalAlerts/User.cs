@@ -13,6 +13,11 @@ namespace FAJournalAlerts
         public string username = "";
         public int latestJournal = -42;
 
+        public User(string u)
+        {
+            username = u;
+        }
+
         //Parses the ID of the latest journal and compares it to the last ID parsed, alerting the user if the new ID is larger
         public void setLatestJournal(WebClient w, string suffix)
         {

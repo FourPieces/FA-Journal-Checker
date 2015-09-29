@@ -26,8 +26,7 @@ namespace FAJournalAlerts
                 answer = Console.ReadLine();
                 if (answer != "!stop")
                 {
-                    artists[numArtists] = new User();
-                    artists[numArtists].username = answer;
+                    artists[numArtists] = new User(answer);
                     numArtists++;
                 }
             }
