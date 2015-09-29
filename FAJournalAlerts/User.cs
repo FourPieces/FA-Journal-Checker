@@ -47,7 +47,15 @@ namespace FAJournalAlerts
         {
             if (s.Length < 7)
                 return 0;
-            s = s.Remove(14);
+            try
+            {
+                s = s.Remove(14);
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("Unexpected journal length.\nPlease make sure the user you are checking has journal IDs of 7+ digits in length.");
+                Environment.Exit(-1);
+            }
             s = s.Trim(new Char[] { ' ', '\n', '[', '\"', ',', ']', '\n' });
             return Int32.Parse(s);
         }
