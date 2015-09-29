@@ -65,7 +65,7 @@ namespace FAJournalAlerts
         {
             latestJournal = downloadJournalID();
             if (latestJournal > 0)
-                Console.WriteLine("Initialized with latest journal for " + username + ". ID: " + latestJournal + " Title: " + getJournalName());
+                Console.WriteLine("Initialized with latest journal for " + username + ".\nID: " + latestJournal + " Title: " + getJournalName());
             else
                 Console.WriteLine(username + " currently has no journals. Initialized with ID 0.");
         }
