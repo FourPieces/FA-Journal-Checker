@@ -13,14 +13,14 @@ namespace FAJournalAlerts
         private string username = "";
         private string journalSuffix = "/user/";
         private int latestJournal = -42;
-        private WebClient individualWebClient = new WebClient();
+        private WebClient individualWebClient = null;
 
         public User(string u, WebClient w)
         {
             username = u;
-            individualWebClient = w; //copies over the webclient to be used with this user
+            individualWebClient = w; //Assigns local webclient variable
             appendSuffix(); //sets the suffix for that user's username
-            initializeLatestJournal(); //initializes the latest journal to the current journal ID or 0 if no journals exist
+            initializeLatestJournalID(); //initializes the latest journal to the current journal ID or 0 if no journals exist
         }
 
         //Downloads the journal ID for the user and returns it as an int
@@ -38,12 +38,12 @@ namespace FAJournalAlerts
                 Environment.Exit(-1);
             }
 
-            return trimJournals(Encoding.ASCII.GetString(myDataBuffer)); //encode it as ASCII in a string file
+            return trimJournalIDs(Encoding.ASCII.GetString(myDataBuffer)); //encode it as ASCII in a string file
         }
         
         //trims formatting from .json file to get only the most recent journal
         //If Length is too small, there is no journal, so return 0 as the ID
-        private int trimJournals(string s)
+        private int trimJournalIDs(string s)
         {
             if (s.Length < 7)
                 return 0;
@@ -61,7 +61,7 @@ namespace FAJournalAlerts
         }
 
         //sets lastestJournal for the user to the most recent journal ID
-        private void initializeLatestJournal()
+        private void initializeLatestJournalID()
         {
             latestJournal = downloadJournalID();
             if (latestJournal > 0)
@@ -71,7 +71,7 @@ namespace FAJournalAlerts
         }
 
         //Takes the ID of the latest journal and compares it to the last ID stored, alerting the user if the new ID is larger
-        public void setLatestJournal()
+        public void checkLatestJournalID()
         {
             //If the last latest journal has a smaller ID than the current latest journal, that means that the current journal is more recent than the last check
             //Alert the user if so

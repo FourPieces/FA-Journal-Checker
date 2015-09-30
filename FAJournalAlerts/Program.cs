@@ -52,7 +52,7 @@ namespace FAJournalAlerts
                 for (int i = 0; i < numArtists; i++)
                 {
                     Console.WriteLine("Checking latest journal for " + artists[i].getUsername());
-                    artists[i].setLatestJournal();
+                    artists[i].checkLatestJournalID();
                 }
                 System.Threading.Thread.Sleep(minuteDelay * 60 * 1000); // (desired minutes * 60 * 1000)
             }
