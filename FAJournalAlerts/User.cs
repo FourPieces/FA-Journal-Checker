@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace FAJournalAlerts
 {
@@ -38,26 +39,15 @@ namespace FAJournalAlerts
                 Environment.Exit(-1);
             }
 
-            return trimJournalIDs(Encoding.ASCII.GetString(myDataBuffer)); //encode it as ASCII in a string file
-        }
-        
-        //trims formatting from .json file to get only the most recent journal
-        //If Length is too small, there is no journal, so return 0 as the ID
-        private int trimJournalIDs(string s)
-        {
-            if (s.Length < 7)
-                return 0;
+            dynamic journalIDs = JArray.Parse(Encoding.ASCII.GetString(myDataBuffer)); //encode it as ASCII in a string file
             try
             {
-                s = s.Remove(14);
+                return journalIDs[0];
             }
             catch (System.ArgumentOutOfRangeException)
             {
-                Console.WriteLine("Unexpected journal length.\nPlease make sure the user you are checking has journal IDs of 7+ digits in length.");
-                Environment.Exit(-1);
+                return 0;
             }
-            s = s.Trim(new Char[] { ' ', '\n', '[', '\"', ',', ']', '\n' });
-            return Int32.Parse(s);
         }
 
         //sets lastestJournal for the user to the most recent journal ID
